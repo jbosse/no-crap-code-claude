@@ -11,7 +11,7 @@ Deterministic steps are marked with `*`. These are **NEVER** performed by an age
 
 ## 🧠 Runtime model
 
-The Orchestrator runs in the **parent Pi session**. Every other role runs as a **child subagent** spawned via Claude Code subagents (the Task tool) — a fresh Claude Code subagent with its own context window, loaded only with that role's skill and the small slice of files it needs.
+The Orchestrator runs in the **parent Claude Code session**. Every other role runs as a **child subagent** spawned via Claude Code subagents (the Task tool) — a fresh Claude Code subagent with its own context window, loaded only with that role's skill and the small slice of files it needs.
 
 **Documents are the handoff protocol.** Each subagent reads a known set of files from disk, writes exactly one, returns. The parent never loads role outputs into its own context; it only holds routing state (sprint name, phase, current task id, strike count). Everything else is on disk.
 
@@ -157,7 +157,7 @@ Non-interactive loop. **Strictly single-process, strictly sequential.** No paral
 
 PM produces a flat ordered task list in `plan.md`. The Orchestrator runs each task end-to-end through the gate chain below, in list order, until all tasks are done.
 
-Per-task gate sequence (runs as a Claude Code subagents (the Task tool) chain):
+Per-task gate sequence (runs as a chain of Claude Code subagents via the Task tool):
 
 ```
 🧭 Orchestrator: assign task

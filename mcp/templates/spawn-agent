@@ -38,7 +38,7 @@ if [ -z "$BRANCH" ]; then
   exit 1
 fi
 
-echo -e "${BLUE}🚀 Spawning new Pi agent for branch: ${BRANCH}${NC}"
+echo -e "${BLUE}🚀 Spawning new Claude Code agent for branch: ${BRANCH}${NC}"
 echo ""
 
 # Sanitize branch name for directory (replace slashes and special chars with dashes,
