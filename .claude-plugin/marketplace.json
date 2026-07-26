@@ -1,0 +1,11 @@
+{
+  "name": "no-crap-claude-dev",
+  "owner": { "name": "Jimmy Bosse" },
+  "plugins": [
+    {
+      "name": "no-crap-claude",
+      "source": "./",
+      "description": "AI-assisted Scrum-style sprint tooling for Phoenix projects."
+    }
+  ]
+}
