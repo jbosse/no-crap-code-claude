@@ -9,5 +9,5 @@
     "outDir": "dist",
     "rootDir": ".."
   },
-  "include": ["src/**/*.ts", "../lib/**/*.ts"]
+  "include": ["src/**/*.ts", "../lib/**/*.ts", "../hooks/**/*.ts"]
 }
