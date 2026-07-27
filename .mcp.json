@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sprint-orchestrator": {
+      "command": "npx",
+      "args": ["tsx", "${CLAUDE_PLUGIN_ROOT}/mcp/src/index.ts"],
+      "env": {}
+    }
+  }
+}
