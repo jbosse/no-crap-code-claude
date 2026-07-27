@@ -1,5 +1,5 @@
 // hooks/bash-git-guard.ts
-import { extractGitSubcommand, BLOCKED_GIT_SUBCOMMANDS } from "../lib/git-guard.js";
+import { hasBlockedGitSubcommand } from "../lib/git-guard.js";
 
 interface PreToolUseEvent {
   tool_name?: string;
@@ -22,8 +22,8 @@ async function main() {
   if (event.tool_name !== "Bash") process.exit(0);
 
   const command = event.tool_input?.command ?? "";
-  const sub = extractGitSubcommand(command);
-  if (!sub || !BLOCKED_GIT_SUBCOMMANDS.includes(sub)) process.exit(0);
+  const sub = hasBlockedGitSubcommand(command);
+  if (!sub) process.exit(0);
 
   process.stderr.write(
     `Blocked 'git ${sub}'. Sprint tooling owns git mutations — use the sprint-orchestrator MCP tools ` +

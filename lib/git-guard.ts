@@ -18,3 +18,19 @@ export function extractGitSubcommand(command: string): string | undefined {
   }
   return undefined;
 }
+
+/**
+ * Splits a shell command on control operators (&&, ||, ;, |) and checks
+ * every resulting segment for a blocked git subcommand. This prevents
+ * compound commands like `git add -A && git commit -m x` from slipping
+ * a blocked subcommand past a check that only looked at the first `git`
+ * invocation in the whole string.
+ */
+export function hasBlockedGitSubcommand(command: string): string | undefined {
+  const segments = command.split(/&&|\|\||;|\|/);
+  for (const segment of segments) {
+    const sub = extractGitSubcommand(segment);
+    if (sub && BLOCKED_GIT_SUBCOMMANDS.includes(sub)) return sub;
+  }
+  return undefined;
+}
