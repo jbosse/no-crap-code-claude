@@ -15,8 +15,8 @@ Read user-stories.md (+ any architecture.md / AGENTS.md / styleguide.md bits the
 ```
 test "returns {:ok, %Forecast{}} when attrs are valid", %{ctx: ctx} do
   # Create initial forecast
-  {:ok, %PiDevSetup.Forecasts.Schema.Forecast{id: id}} =
-    PiDevSetup.Forecasts.Commands.CreateForecast.execute(ctx, %{name: "Q1", period: "2025-Q1"})
+  {:ok, %MyApp.Forecasts.Schema.Forecast{id: id}} =
+    MyApp.Forecasts.Commands.CreateForecast.execute(ctx, %{name: "Q1", period: "2025-Q1"})
   # ...
 end
 ```

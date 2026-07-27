@@ -41,7 +41,7 @@ Then call `strike_record(taskId, "reviewer", "<summary of findings>")`. Attach f
 ## Checklist summary (full detail in `/docs/styleguide.md`)
 
 - **Structure & SRP**: function/module size, CC, arity, nesting, pipe length.
-- **Layering**: `pi_dev_setup_web/` → context public API only; domain → ports only; vendor SDKs only in `adapters/`.
+- **Layering**: `my_app_web/` → context public API only; domain → ports only; vendor SDKs only in `adapters/`.
 - **CQS**: Commands single `execute/2` + one `Ecto.Multi`; Queries single `run/2`, no writes. Threshold for promoting a plain context fn to a Command module respected.
 - **`%Ctx{}`**: threaded first-arg everywhere (once established in the project); `stamp_metadata/1` called per sprint's architecture.md.
 - **Naming**: `snake_case` files (no role suffix), `PascalCase` modules with role in namespace, predicates end `?`, glossary terms canonical.

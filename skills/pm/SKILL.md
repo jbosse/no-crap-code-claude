@@ -49,7 +49,7 @@ Proposals (not auto-commits):
   ## Planning Summary
   {full content of planning-summary.md}
   ```
-  The source files (`user-stories.md`, `architecture.md`, `reviewer-checklist.md`, `spec.md`, `plan.md`, `planning-summary.md`) are gitignored by `mix pi_dev_setup` / `mix pi_dev_update`; `sprint-review.md` is the permanent committed record of all six.
+  The source files (`user-stories.md`, `architecture.md`, `reviewer-checklist.md`, `spec.md`, `plan.md`, `planning-summary.md`) are gitignored by the `setup_project` MCP tool (invoked via the `setup` skill / `/setup` command), which patches `.gitignore` with the sprint artifact patterns; `sprint-review.md` is the permanent committed record of all six.
 - Targeted update to `/docs/architecture.md` — only sections the sprint changed. Preserve the rest.
 - Append to `/docs/project_memory.md` — newest sprint on top. Fields: goal, what shipped, key decisions, gotchas, link to sprint dir.
 - Update `CHANGELOG.md` — append one line inside the **version block marked "Not yet released"** under the correct section heading. Create the heading if it does not yet exist in that block; do NOT create a new version block. Format:

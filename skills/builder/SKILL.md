@@ -38,13 +38,13 @@ Some changes come from `mix` generators (`mix ecto.gen.migration`, `mix phx.gen.
 - **Never edit tests to make them pass.** If a test is wrong, flag to Orchestrator → Tester. You do not touch tests.
 - **Never write outside declared file ownership.** Extension enforces.
 - **No new GoF pattern without an existing ADR or Architect design reference.** No speculative patterns.
-- **Layering**: `pi_dev_setup_web/` stays thin (parse, authorize, dispatch); domain code depends only on ports (behaviours); vendor SDKs / `Req` calls live only in `adapters/`.
+- **Layering**: `my_app_web/` stays thin (parse, authorize, dispatch); domain code depends only on ports (behaviours); vendor SDKs / `Req` calls live only in `adapters/`.
 - **CQS**: Commands = single `execute/2`, writes inside one `Ecto.Multi`, returns `{:ok, _} | {:error, struct}`. Queries = single `run/2`, no writes.
-- **`%Ctx{}`**: first-arg everywhere once established; call `PiDevSetup.Ctx.stamp_metadata/1` at the boundary. If `%Ctx{}` has not yet been established in this project, follow the sprint's architecture.md for how context is threaded.
+- **`%Ctx{}`**: first-arg everywhere once established; call `MyApp.Ctx.stamp_metadata/1` at the boundary. If `%Ctx{}` has not yet been established in this project, follow the sprint's architecture.md for how context is threaded.
 - **Error handling**: no `raise "string"`; no wildcard `rescue _ -> ...`; adapters wrap vendor exceptions into domain error structs under `<context>/errors/`; `Logger.error` before returning `{:error, _}`.
 - **Logging**: `Logger` only. No `IO.puts`, no `IO.inspect`, no `dbg/1` in committed code.
 - **Boundary validation**: every external input goes through a Contract (embedded-schema changeset). Domain functions never accept raw `params`.
-- **Config**: `System.get_env/1` only in `runtime.exs`; `Application.get_env/2` only in `PiDevSetup.Config` (once established).
+- **Config**: `System.get_env/1` only in `runtime.exs`; `Application.get_env/2` only in `MyApp.Config` (once established).
 - **Docs**: `@moduledoc` on every module; `@doc` + `@spec` on every public function; inline comments are why-not-what only.
 - **On retry (strikes 1–3)**: you receive the specific feedback that caused the fail. Address it directly. Do NOT rewrite from scratch unless feedback says so.
 

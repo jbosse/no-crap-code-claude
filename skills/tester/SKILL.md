@@ -62,8 +62,8 @@ Structure is idiomatic ExUnit. BDD phrasing lives in the test names, **not** in 
 **Planning stubs** (comment-only bodies, no real code):
 
 ```elixir
-defmodule PiDevSetup.Forecasts.Commands.CreateForecastTest do
-  use PiDevSetup.DataCase, async: true
+defmodule MyApp.Forecasts.Commands.CreateForecastTest do
+  use MyApp.DataCase, async: true
 
   describe "execute/2" do
     @tag :pending
@@ -86,11 +86,11 @@ end
 **Gate 1 implementation** (filled in by Tester during dev, after Builder's code exists):
 
 ```elixir
-defmodule PiDevSetup.Forecasts.Commands.CreateForecastTest do
-  use PiDevSetup.DataCase, async: true
+defmodule MyApp.Forecasts.Commands.CreateForecastTest do
+  use MyApp.DataCase, async: true
 
-  alias PiDevSetup.Forecasts.Commands.CreateForecast
-  alias PiDevSetup.Forecasts.Errors.InvalidInput
+  alias MyApp.Forecasts.Commands.CreateForecast
+  alias MyApp.Forecasts.Errors.InvalidInput
 
   describe "execute/2" do
     test "returns {:ok, %Forecast{}} when attrs are valid", %{ctx: ctx} do
