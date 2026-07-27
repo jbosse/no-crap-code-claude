@@ -317,6 +317,22 @@ server.registerTool(
 );
 
 server.registerTool(
+  "polish_task_append",
+  {
+    description: "Final-review-time: append a single polish-{n} task. Flips phase to development for the duration.",
+    inputSchema: { id: z.string(), title: z.string(), story: z.string(), files: z.array(z.string()) },
+  },
+  async ({ id, title, story, files }) => {
+    const { state, paths } = requireActive();
+    const prev = state.phase;
+    appendPolishTask(state, { id, title, story, files });
+    saveState(paths, state);
+    appendSprintLog(paths, `polish_task_append ${id}${prev !== state.phase ? ` (phase ${prev} -> ${state.phase})` : ""}`);
+    return { content: [{ type: "text", text: `Appended ${id}. Phase is now ${state.phase}.` }] };
+  },
+);
+
+server.registerTool(
   "sprint_approve_planning",
   { description: "Runs mix precommit against the planning tree, commits planning artifacts, flips phase -> planning-approved.", inputSchema: {} },
   async () => {
