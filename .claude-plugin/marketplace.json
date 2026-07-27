@@ -1,5 +1,6 @@
 {
   "name": "no-crap-claude-dev",
+  "description": "Development marketplace for the no-crap-claude sprint tooling plugin.",
   "owner": { "name": "Jimmy Bosse" },
   "plugins": [
     {
