@@ -144,6 +144,17 @@ export async function commitLogsConsolidation(input: {
   return sha.stdout.trim();
 }
 
+export async function commitClosedState(input: { sprintName: string; sprintRootRel: string }): Promise<string | null> {
+  const add = await run("git", ["add", "--", input.sprintRootRel]);
+  if (add.code !== 0) throw new Error(`git add (closed state) failed: ${add.stderr}`);
+  const diff = await run("git", ["diff", "--cached", "--quiet"]);
+  if (diff.code === 0) return null;
+  const commit = await run("git", ["commit", "-m", "close: finalize sprint-state.json (phase=closed)"]);
+  if (commit.code !== 0) throw new Error(`close commit failed: ${commit.stderr}`);
+  const sha = await run("git", ["rev-parse", "HEAD"]);
+  return sha.stdout.trim();
+}
+
 export async function mergeSprint(sprintBranch: string): Promise<string> {
   const dirty = await run("git", ["status", "--porcelain"]);
   if (dirty.stdout.trim().length > 0) throw new Error("working tree dirty — cannot merge");

@@ -27,6 +27,7 @@ import {
   commitPlanning,
   commitTask,
   commitLogsConsolidation,
+  commitClosedState,
   mergeSprint,
   pushBranch,
   createPullRequest,
@@ -309,6 +310,7 @@ server.registerTool(
     await runConsolidateLogs(paths, state);
     state.phase = "closed";
     saveState(paths, state);
+    await commitClosedState({ sprintName: state.name, sprintRootRel: `${SPRINT_ROOT_REL}/${state.name}` });
     const sha = await mergeSprint(state.branch);
     return { content: [{ type: "text", text: `merged ${state.branch} -> main @ ${sha}` }] };
   },
@@ -343,6 +345,7 @@ server.registerTool(
     await runConsolidateLogs(paths, state);
     state.phase = "closed";
     saveState(paths, state);
+    await commitClosedState({ sprintName: state.name, sprintRootRel: `${SPRINT_ROOT_REL}/${state.name}` });
 
     if (local) {
       const sha = await mergeSprint(state.branch);
