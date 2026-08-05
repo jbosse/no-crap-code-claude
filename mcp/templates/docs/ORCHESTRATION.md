@@ -162,8 +162,8 @@ Per-task gate sequence (runs as a chain of Claude Code subagents via the Task to
 ```
 🧭 Orchestrator: assign task
   → tooling: task_log_append*                          ("assigned")
-  → Task tool (subagent_type: "builder")     writes production code
-  → Task tool (subagent_type: "tester")      Gate 1: tests pass
+  → Task tool (subagent_type: "builder")     writes tests + production code
+  → Task tool (subagent_type: "tester")      Gate 1: verifies tests, runs suite
   → Task tool (subagent_type: "reviewer")    Gate 2: code review
   → Task tool (subagent_type: "security")    Gate 3: security review
   → tooling: verify_run*                               Gate 4 (build/test/lint/types)

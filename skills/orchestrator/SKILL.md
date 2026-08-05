@@ -73,8 +73,8 @@ Invoke the Task tool with `subagent_type: "product-owner"` and this prompt:
 Example — dev task gate chain:
 
 Invoke the Task tool four times in sequence for task `{task-id}`, waiting for each to finish before starting the next:
-  1. subagent_type: "builder"   — writes production code, calls gate_pass(taskId, "builder")
-  2. subagent_type: "tester"    — Gate 1, calls gate_pass(taskId, "tester") or strike_record
+  1. subagent_type: "builder"   — writes tests + production code, calls gate_pass(taskId, "builder")
+  2. subagent_type: "tester"    — Gate 1: verifies tests, calls gate_pass(taskId, "tester") or strike_record
   3. subagent_type: "reviewer"  — Gate 2, calls gate_pass(taskId, "reviewer") or strike_record
   4. subagent_type: "security"  — Gate 3, calls gate_pass(taskId, "security") or strike_record
 
@@ -131,8 +131,8 @@ Single-process flow. No waves. No parallelism. For each task:
 task_log_append(taskId, "orchestrator", 1, "assigned")
 Invoke the Task tool four times in sequence for this task, waiting for each to finish
 before starting the next:
-  1. subagent_type: "builder"   — writes production code, calls gate_pass(taskId, "builder")
-  2. subagent_type: "tester"    — Gate 1, calls gate_pass(taskId, "tester") or strike_record
+  1. subagent_type: "builder"   — writes tests + production code, calls gate_pass(taskId, "builder")
+  2. subagent_type: "tester"    — Gate 1: verifies tests, calls gate_pass(taskId, "tester") or strike_record
   3. subagent_type: "reviewer"  — Gate 2, calls gate_pass(taskId, "reviewer") or strike_record
   4. subagent_type: "security"  — Gate 3, calls gate_pass(taskId, "security") or strike_record
 Each step reads the task's plan.md entry and the prior step's log itself — you (the
@@ -170,8 +170,8 @@ Task tool → subagent_type: "pm", prompt: "Append polish-{n} to plan.md for fix
 # then run polish-{n} through the full gate chain, same as a normal task:
 Invoke the Task tool four times in sequence for task "polish-{n}", waiting for each to finish
 before starting the next:
-  1. subagent_type: "builder"   — writes production code, calls gate_pass(taskId, "builder")
-  2. subagent_type: "tester"    — Gate 1, calls gate_pass(taskId, "tester") or strike_record
+  1. subagent_type: "builder"   — writes tests + production code, calls gate_pass(taskId, "builder")
+  2. subagent_type: "tester"    — Gate 1: verifies tests, calls gate_pass(taskId, "tester") or strike_record
   3. subagent_type: "reviewer"  — Gate 2, calls gate_pass(taskId, "reviewer") or strike_record
   4. subagent_type: "security"  — Gate 3, calls gate_pass(taskId, "security") or strike_record
 Each step reads the task's plan.md entry and the prior step's log itself — you (the

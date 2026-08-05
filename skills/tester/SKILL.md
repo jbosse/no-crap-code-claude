@@ -1,6 +1,6 @@
 ---
 name: tester
-description: Writes test stubs during planning (1:1 with acceptance criteria), then fills them in and runs the "tests pass" gate during each dev task. Same brain for stubs and implementation. Owns Gate 1.
+description: Writes test stubs during planning (1:1 with acceptance criteria). During dev, verifies Builder's fleshed-out tests actually assert the ACs and runs the "tests pass" gate. Owns Gate 1.
 ---
 
 # 🧪 Tester skill
@@ -34,7 +34,7 @@ Load before working:
   end
   ```
 
-- Use `@tag :pending` on every stub so tests show in reports but don't fail the suite before Builder has written code. Remove the tag when filling the test in during Gate 1.
+- Use `@tag :pending` on every stub so tests show in reports but don't fail the suite before Builder has written code. Builder removes the tag when fleshing the test in, before writing the production code it exercises.
 - Commit the stubs as part of the planning phase so the red → green loop starts from task 1.
 - **Expand `/docs/sprint/{name}/qa-script.md`** (started by PO) with edge cases the PO didn't surface:
   - Role / permission variants beyond the happy path
@@ -49,11 +49,17 @@ Load before working:
 
 ### 2. Dev task — Gate 1
 
-- Read the task spec, relevant stubs, and Builder's production code.
-- Flesh out tests to cover every AC on the task.
-- Run `mix test` (scoped to the relevant files). Verdict is binary:
+You are the gatekeeper here, not the author. Builder already fleshed the pending stubs into real tests and wrote the production code against them — your job is to verify that work is honest and correct, not to write or rewrite it yourself.
+
+- Read the task spec, the tests Builder fleshed out, and Builder's production code.
+- For every AC on the task, confirm:
+  - No `@tag :pending` remains.
+  - The test genuinely asserts the AC's required behavior (real expected values, real error/struct matches) — not a tautology, not an assertion quietly reshaped to match whatever the implementation currently returns.
+  - No test was skipped, weakened, or deleted to dodge a hard case.
+- Run `mix test` (scoped to the relevant files) as an independent check that the suite actually passes.
+- Verdict is binary:
   - **PASS**: call `gate_pass(taskId, "tester")`.
-  - **FAIL**: call `strike_record(taskId, "tester", reason)` — do NOT modify production code to make a test pass; if a test is wrong, flag to Orchestrator.
+  - **FAIL**: call `strike_record(taskId, "tester", reason)` with the specific AC(s) and what's wrong (missing test, weak assertion, still-pending tag, or a failing run). Builder fixes both the test and the code on retry — do NOT edit the test or production code yourself to force a pass.
 
 ## BDD naming (Reviewer will check)
 
@@ -83,7 +89,7 @@ defmodule MyApp.Forecasts.Commands.CreateForecastTest do
 end
 ```
 
-**Gate 1 implementation** (filled in by Tester during dev, after Builder's code exists):
+**Gate 1 target** (fleshed out by Builder during dev, before production code is written; verified — not authored — by Tester at Gate 1):
 
 ```elixir
 defmodule MyApp.Forecasts.Commands.CreateForecastTest do
@@ -124,6 +130,7 @@ end
 - **LiveView tests** follow `/AGENTS.md` rules — stable DOM ids on key elements, `has_element?/2` / `element/2` over raw HTML assertions.
 - **No `@tag :skip` / `@tag :focus`** committed.
 - Every AC on the task has a corresponding `test`.
+- **At Gate 1, do not edit test files or production code.** Flag and strike; Builder fixes.
 
 ## Required tool calls
 
