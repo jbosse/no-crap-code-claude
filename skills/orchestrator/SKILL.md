@@ -50,6 +50,7 @@ Every `*`-marked step in ORCHESTRATION.md goes through the `sprint-orchestrator`
 | Commit | `commit_task` |
 | Final merge | `sprint_merge` (via `/sprint:approve-close`) |
 | Append polish task | the pm subagent (Task tool, subagent_type: pm) calls `polish_task_append` — you do not call it directly |
+| Commit close-phase doc updates | `commit_docs_update` — after PM's docs-update pass and the human's approval, before `/sprint:approve-close` |
 
 If a tool refuses a transition, **trust it**. That means the move is illegal. Fix the upstream gate, don't argue with the state machine.
 
@@ -182,6 +183,7 @@ commit_task(polish-{n})
 # --- end polish loop when human is satisfied ---
 Task tool → subagent_type: "pm", prompt: "docs-update mode: propose /docs/architecture.md diff, /docs/project_memory.md append, /CHANGELOG.md line, /README.md update, write /docs/sprint/{name}/sprint-review.md (consolidate planning docs), finalize /docs/sprint/{name}/qa-script.md"
 # show to human; they approve
+commit_docs_update                              # tooling* — commits architecture.md/project_memory.md/CHANGELOG.md/README.md/docs/adr/*
 /sprint:approve-close   (or --local)           # human runs this — you wait
 ```
 

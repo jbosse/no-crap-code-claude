@@ -31,9 +31,11 @@ import {
   mergeSprint,
   pushBranch,
   createPullRequest,
+  commitDocsUpdate,
 } from "./git.js";
 import { DEFAULT_STEPS, runVerify } from "./verify.js";
 import { runSetup } from "./setup.js";
+import { LIVING_DOC_PATHS } from "../../lib/ownership.js";
 
 const CWD = process.cwd();
 let ACTIVE_SPRINT: string | undefined;
@@ -389,6 +391,27 @@ server.registerTool(
       result.gitignorePatched ? ".gitignore patched with sprint artifact patterns." : ".gitignore already had sprint patterns.",
     ];
     return { content: [{ type: "text", text: lines.join("\n") }] };
+  },
+);
+
+server.registerTool(
+  "commit_docs_update",
+  {
+    description:
+      "Commits living-doc updates (architecture.md, project_memory.md, glossary.md, CHANGELOG.md, README.md, docs/adr/*) written during final-review's docs-update mode. Requires phase=final-review. Call after PM's docs-update pass and the human's approval, before sprint_approve_close.",
+    inputSchema: { paths: z.array(z.string()).optional() },
+  },
+  async ({ paths: docPaths }) => {
+    const { state, paths } = requireActive();
+    if (state.phase !== "final-review") {
+      throw new Error(`Cannot commit docs update: phase is ${state.phase}, expected final-review.`);
+    }
+    const targets = docPaths && docPaths.length > 0 ? docPaths : [...LIVING_DOC_PATHS];
+    const sha = await commitDocsUpdate({ sprintName: state.name, paths: targets });
+    appendSprintLog(paths, `commit_docs_update${sha ? ` @ ${sha.slice(0, 7)}` : " (nothing to commit)"}`);
+    return {
+      content: [{ type: "text", text: sha ? `Docs update committed @ ${sha.slice(0, 7)}.` : "Nothing to commit." }],
+    };
   },
 );
 

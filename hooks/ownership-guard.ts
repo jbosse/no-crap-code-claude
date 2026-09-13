@@ -1,7 +1,7 @@
 // hooks/ownership-guard.ts
 import { sprintPaths, SPRINT_ROOT_REL } from "../lib/paths.js";
 import { loadState } from "../lib/state.js";
-import { pathOwnedBy } from "../lib/ownership.js";
+import { pathOwnedBy, isLivingDocPath } from "../lib/ownership.js";
 
 interface PreToolUseEvent {
   tool_name?: string;
@@ -52,6 +52,12 @@ async function main() {
 
   const sprintRootRel = `${SPRINT_ROOT_REL}/${state.name}`;
   if (path === sprintRootRel || path.startsWith(`${sprintRootRel}/`)) process.exit(0);
+
+  // Final-review's docs-update mode (PM, per ORCHESTRATION.md) targets a fixed
+  // set of root-level living docs that no dev-phase task ever declares
+  // ownership of. Without this, the guard would block every one of them the
+  // moment the last task reaches `done` — the exact window docs-update runs in.
+  if (state.phase === "final-review" && isLivingDocPath(path)) process.exit(0);
 
   if (state.tasks.length === 0) {
     const allowed = ["docs/", "test/", "config/", "priv/"].some((p) => path.startsWith(p));

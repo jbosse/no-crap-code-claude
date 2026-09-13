@@ -224,6 +224,10 @@ Interactive. Orchestrator walks the human through the sprint for sign-off, then 
                                                         /docs/sprint/{name}/sprint-review.md (consolidates the 6 planning docs),
                                                         /docs/sprint/{name}/qa-script.md (final QA form)
   → ✋ Human approves doc updates
+  → tooling: commit_docs_update*       — commits architecture.md/project_memory.md/CHANGELOG.md/README.md/
+                                          docs/adr/* written above (sprint-scoped docs like sprint-review.md
+                                          and qa-script.md are already covered by the sprint-root exemption
+                                          and need no separate commit call)
   → tooling: close the sprint*
        /sprint:approve-close          — pushes branch, opens a GitHub PR via `gh` (default)
        /sprint:approve-close --local  — merges sprint/{name} → main directly (no remote needed)

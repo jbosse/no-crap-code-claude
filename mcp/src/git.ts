@@ -1,6 +1,7 @@
 // mcp/src/git.ts
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { existsSync } from "node:fs";
 
 const execFileAsync = promisify(execFile);
 
@@ -140,6 +141,19 @@ export async function commitLogsConsolidation(input: {
   const commit = await run("git", ["commit", "-m", msg]);
   if (commit.code !== 0) throw new Error(`git commit (consolidate logs) failed: ${commit.stderr}`);
 
+  const sha = await run("git", ["rev-parse", "HEAD"]);
+  return sha.stdout.trim();
+}
+
+export async function commitDocsUpdate(input: { sprintName: string; paths: string[] }): Promise<string | null> {
+  const existing = input.paths.filter((p) => existsSync(p));
+  if (existing.length === 0) return null;
+  const add = await run("git", ["add", "--", ...existing]);
+  if (add.code !== 0) throw new Error(`git add (docs update) failed: ${add.stderr}`);
+  const diff = await run("git", ["diff", "--cached", "--quiet"]);
+  if (diff.code === 0) return null;
+  const commit = await run("git", ["commit", "-m", `[sprint/${input.sprintName}] docs: living-doc updates at close`]);
+  if (commit.code !== 0) throw new Error(`docs update commit failed: ${commit.stderr}`);
   const sha = await run("git", ["rev-parse", "HEAD"]);
   return sha.stdout.trim();
 }
