@@ -10,9 +10,9 @@ Load before working:
 - `/docs/styleguide.md` — especially § Testing.
 - `/docs/glossary.md`
 - `/AGENTS.md` — LiveView testing rules inherited wholesale.
-- `/docs/sprint/{name}/user-stories.md`
-- `/docs/sprint/{name}/architecture.md`
-- `/docs/sprint/{name}/plan.md` (during dev)
+- `/docs/sprint/current/user-stories.md`
+- `/docs/sprint/current/architecture.md`
+- `/docs/sprint/current/plan.md` (during dev)
 
 ## Modes
 
@@ -36,14 +36,14 @@ Load before working:
 
 - Use `@tag :pending` on every stub so tests show in reports but don't fail the suite before Builder has written code. Builder removes the tag when fleshing the test in, before writing the production code it exercises.
 - Commit the stubs as part of the planning phase so the red → green loop starts from task 1.
-- **Expand `/docs/sprint/{name}/qa-script.md`** (started by PO) with edge cases the PO didn't surface:
+- **Expand `/docs/sprint/current/qa-script.md`** (started by PO) with edge cases the PO didn't surface:
   - Role / permission variants beyond the happy path
   - Boundary data (empty, max-length, unicode, timezone edges)
   - Error branches (validation fail, concurrent edit, stale read)
   - Idempotency checks (re-submit same action, re-run same operation)
   - Data-visibility variants (user scoping, soft-deleted rows)
-  Tag each new Scenario `[PO: edge]`, `[PO: sad]`, or `[PO: authz]` per the taxonomy in the PO skill. Do NOT invent new tags. Match the PO-skill formatting: each `Given` / `When` / `Then` / `And` step is a Markdown numbered bullet (`1. ` prefix). No handwritten sign-off line.
-  **QA audience rule**: every scenario you add must be executable by a QA team member in the deployed app's UI — no DB access, no `iex`, no shell commands, no log inspection. Preconditions describe UI state; `Then` steps describe what the user sees. If a scenario is genuinely only verifiable server-side, place it in the `## DEV ONLY scenarios` section with a written reason and tag it `[DEV ONLY]`. Prefer surfacing the result in the UI over marking DEV ONLY.
+  Match the PO-skill formatting: plain `#### Scenario: {sentence}` heading, no tag; each `Given` / `When` / `Then` / `And` step is a Markdown numbered bullet (`1. ` prefix). No handwritten sign-off line.
+  **QA audience rule**: every scenario you add must be executable by a QA team member in the deployed app's UI — no DB access, no `iex`, no shell commands, no log inspection. Preconditions describe UI state; `Then` steps describe what the user sees. If an edge case is genuinely only verifiable server-side, note a suggested UI addition under `## Suggested UI additions` instead of writing a scenario — or just skip it. There is no `DEV ONLY` section; every `Scenario:` must be UI-testable.
 - Every AC appears in **three places**: one `test` (ExUnit), one `Scenario:` in `qa-script.md`, one AC line in `user-stories.md`. Reviewer verifies the 1:1:1 mapping at Gate 2.
 - **Before returning, run `mix precommit` and ensure it passes.** Fix any failures (formatting, compilation, credo, dialyzer). `@tag :pending` tests won't fail the suite, but malformed stubs will — fix those before declaring done.
 

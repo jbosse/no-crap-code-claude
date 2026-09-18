@@ -104,7 +104,7 @@ Do NOT proceed until the human confirms.
 
 ### 6. Hand off
 
-- Write the confirmed summary to `/docs/sprint/{name}/planning-summary.md` under a `## Interview` section. Include the case number (or note "none") so downstream agents don't need to re-derive it.
+- Write the confirmed summary to `/docs/sprint/current/planning-summary.md` under a `## Interview` section. Include the case number (or note "none") so downstream agents don't need to re-derive it.
 - Return control to the parent Orchestrator. The parent runs `sprint_start(name, goal, caseNumber)` next (pass `caseNumber` only when one was given; omit or pass empty string when none).
 
 ## Do not

@@ -1,5 +1,15 @@
-import { describe, it, expect } from "vitest";
-import { sprintPaths, taskLogPath, SPRINT_ROOT_REL } from "../../../lib/paths.js";
+import { describe, it, expect, afterEach } from "vitest";
+import { mkdtempSync, lstatSync, readlinkSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import {
+  sprintPaths,
+  taskLogPath,
+  setCurrentSprintLink,
+  clearCurrentSprintLink,
+  SPRINT_ROOT_REL,
+  CURRENT_LINK_REL,
+} from "../../../lib/paths.js";
 
 describe("sprintPaths", () => {
   it("builds the full sprint directory layout under docs/sprint/{name}", () => {
@@ -27,5 +37,41 @@ describe("sprintPaths", () => {
     expect(taskLogPath(paths, "task-3", "builder", 12)).toBe(
       "/repo/docs/sprint/fix-sorting/logs/task-3-builder-12.log",
     );
+  });
+});
+
+describe("current-sprint link", () => {
+  let cwd: string;
+
+  afterEach(() => {
+    if (cwd) rmSync(cwd, { recursive: true, force: true });
+  });
+
+  it("points docs/sprint/current at the named sprint", () => {
+    cwd = mkdtempSync(join(tmpdir(), "sprint-paths-"));
+    setCurrentSprintLink(cwd, "fix-sorting");
+    const link = join(cwd, CURRENT_LINK_REL);
+    expect(lstatSync(link).isSymbolicLink()).toBe(true);
+    expect(readlinkSync(link)).toBe("fix-sorting");
+  });
+
+  it("repoints cleanly when switching sprints mid-session", () => {
+    cwd = mkdtempSync(join(tmpdir(), "sprint-paths-"));
+    setCurrentSprintLink(cwd, "fix-sorting");
+    setCurrentSprintLink(cwd, "add-export");
+    const link = join(cwd, CURRENT_LINK_REL);
+    expect(readlinkSync(link)).toBe("add-export");
+  });
+
+  it("clearCurrentSprintLink removes the pointer", () => {
+    cwd = mkdtempSync(join(tmpdir(), "sprint-paths-"));
+    setCurrentSprintLink(cwd, "fix-sorting");
+    clearCurrentSprintLink(cwd);
+    expect(() => lstatSync(join(cwd, CURRENT_LINK_REL))).toThrow();
+  });
+
+  it("clearCurrentSprintLink is a no-op when nothing is there", () => {
+    cwd = mkdtempSync(join(tmpdir(), "sprint-paths-"));
+    expect(() => clearCurrentSprintLink(cwd)).not.toThrow();
   });
 });

@@ -69,7 +69,7 @@ Example — planning phase, product owner:
 
 Invoke the Task tool with `subagent_type: "product-owner"` and this prompt:
 
-"Sprint {name}. Goal: '{goal}'. Write /docs/sprint/{name}/user-stories.md and seed /docs/sprint/{name}/qa-script.md per your skill. Log via task_log_append(taskId='planning', agent='po')."
+"Sprint {name}. Goal: '{goal}'. Write /docs/sprint/current/user-stories.md and seed /docs/sprint/current/qa-script.md per your skill. Log via task_log_append(taskId='planning', agent='po')."
 
 Example — dev task gate chain:
 
@@ -99,8 +99,10 @@ Task tool → subagent_type: "pm", prompt: "assemble planning-summary.md"       
 # ✋ STOP — show planning-summary.md to human; they read + sign off
 # Tell the human: "Planning summary is ready. Review it, then run /sprint:approve-planning to commit and continue."
 /sprint:approve-planning                           # human runs this slash command
-# ✋ WAIT — the command shows a notification. The human must reply "continue" (or any message) in the chat to resume.
-# When the human replies, immediately proceed:
+# The command's tool result (verify green, phase=planning-approved) lands in
+# THIS SAME turn — you already have it, so proceed immediately. No separate
+# "continue" reply is needed: unlike a UI notification, a tool result you just
+# received is not stale.
 Task tool → subagent_type: "pm", prompt: "write spec.md + plan.md, then call sprint_tasks_seed"
 # phase is now `development`; begin dev flow
 ```
@@ -109,7 +111,7 @@ Task tool → subagent_type: "pm", prompt: "write spec.md + plan.md, then call s
 
 After the product-owner subagent returns from mode 1 (user stories), you MUST:
 
-1. Read `/docs/sprint/{name}/user-stories.md` (this is one of the rare cases where you read an artifact — it's short and the human needs to see it).
+1. Read `/docs/sprint/current/user-stories.md` (this is one of the rare cases where you read an artifact — it's short and the human needs to see it).
 2. Present the stories to the human: "Here are the user stories PO wrote. Please review and let me know if they're good, or what needs to change."
 3. **Wait for human response.**
    - If approved → run the product-owner subagent in mode 2 (qa-script), then proceed to the architect subagent.
@@ -181,11 +183,15 @@ verify_run
 commit_task(polish-{n})
 # extension flips phase back to final-review on the last polish task
 # --- end polish loop when human is satisfied ---
-Task tool → subagent_type: "pm", prompt: "docs-update mode: propose /docs/architecture.md diff, /docs/project_memory.md append, /CHANGELOG.md line, /README.md update, write /docs/sprint/{name}/sprint-review.md (consolidate planning docs), finalize /docs/sprint/{name}/qa-script.md"
+Task tool → subagent_type: "pm", prompt: "docs-update mode: propose /docs/architecture.md diff, /docs/project_memory.md append, /CHANGELOG.md line, /README.md update, write /docs/sprint/current/sprint-review.md (consolidate planning docs), finalize /docs/sprint/current/qa-script.md"
 # show to human; they approve
 commit_docs_update                              # tooling* — commits architecture.md/project_memory.md/CHANGELOG.md/README.md/docs/adr/*
 /sprint:approve-close   (or --local)           # human runs this — you wait
 ```
+
+<HARD-GATE>
+`commit_docs_update` MUST run, and its commit must actually land, before `/sprint:approve-close`. Never call `/sprint:approve-close` while a PM docs-update proposal is still sitting uncommitted in the working tree — do not "open the PR now and clean up the docs after." `sprint_approve_close`/`sprint_merge` will now refuse outright if anything outside the sprint's own doc dir is dirty, but don't rely on that refusal as your process: once phase flips to `closed`, `commit_docs_update` stops accepting calls (requires `final-review`) and manual `git commit` on the sprint branch is blocked by the git guard — there is no supported way to commit doc edits after that point. If you ever find yourself with edited-but-uncommitted living docs after approve-close already ran, stop and tell the human directly; do not try to work around the guard.
+</HARD-GATE>
 
 ## Hard rules
 

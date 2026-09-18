@@ -37,5 +37,5 @@ _Append-only. Newest sprint at the top._
 - **Errors**: hybrid — `{:ok, _} | {:error, struct}` tuples with `defexception` structs under `<context>/errors/`. Adapters wrap vendor exceptions; domain never sees them.
 - **Config**: `__APP_MODULE__.Config` + `NimbleOptions` schemas, validated at boot (to be established).
 - **Boundary validation**: symmetric `Ecto.Changeset` + embedded schemas inbound and outbound. One Contract module per external surface.
-- **QA verification script**: every sprint emits `/docs/sprint/{name}/qa-script.md` — Gherkin-style scenarios covering happy / sad / edge / authz / regression. PO seeds, Tester expands edges, Architect adds architectural edges, PM finalizes at close.
+- **QA verification script**: every sprint emits `/docs/sprint/{name}/qa-script.md` — Gherkin-style scenarios covering happy / sad / edge / authz / regression. PO seeds, Tester expands edges, Architect adds architectural edges, PM finalizes during final-review — committed before the sprint closes.
 - **Size limits**: functions ~15 lines, modules ~200 soft / ~400 hard, cyclomatic complexity ≤ 9, arity ≤ 4, nesting ≤ 3.

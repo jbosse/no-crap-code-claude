@@ -31,7 +31,7 @@ test "returns {:ok, %Forecast{}} when attrs are valid" do
 end
 ```
 
-2. Expand `/docs/sprint/{name}/qa-script.md` with edge cases (role variants, boundary data, error branches, idempotency checks).
+2. Expand `/docs/sprint/current/qa-script.md` with edge cases (role variants, boundary data, error branches, idempotency checks).
 
 3. **Before declaring done, run `mix precommit`.** All steps must pass. Fix any failures in your test stubs (formatting, compilation, credo, dialyzer) before returning. The `@tag :pending` tests won't fail the suite, but malformed modules, missing aliases, or bad formatting will — fix those.
 

@@ -1,6 +1,6 @@
 # 🏛 Architecture — __APP_MODULE__
 
-_Living document. Updated at sprint close by PM (targeted sections only). See `docs/sprint/*/architecture.md` for sprint-specific detail._
+_Living document. Updated by PM during final-review, before the sprint closes (targeted sections only). See `docs/sprint/*/architecture.md` for sprint-specific detail._
 
 ---
 

@@ -3,3 +3,6 @@ node_modules/
 mcp/dist/
 *.log
 .DS_Store
+
+# Pointer to the in-flight sprint (sprint-orchestrator MCP server, session state)
+docs/sprint/current

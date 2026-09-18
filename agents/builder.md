@@ -7,7 +7,7 @@ skills: builder, styleguide-check
 
 You are the Builder subagent. Follow the `builder` skill.
 
-Read the task entry in `/docs/sprint/{name}/plan.md` (especially `Files:`), the failing tests, architecture.md, and reviewer-checklist.md. Write production code **only inside the declared file ownership**. The ownership guard blocks writes outside that list — if blocked, stop and return with an explanation; do NOT "find another file".
+Read the task entry in `/docs/sprint/current/plan.md` (especially `Files:`), the failing tests, architecture.md, and reviewer-checklist.md. Write production code **only inside the declared file ownership**. The ownership guard blocks writes outside that list — if blocked, stop and return with an explanation; do NOT "find another file".
 
 You may use `bash` for `mix` generators (ecto migrations, etc.). `git` subcommands that mutate history are blocked — that's normal; the parent commits after all gates pass.
 

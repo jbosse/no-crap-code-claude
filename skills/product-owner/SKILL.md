@@ -16,8 +16,8 @@ Load before writing:
 
 During planning, PO authors **two** artifacts:
 
-1. `/docs/sprint/{name}/user-stories.md` — the stories + ACs (template below).
-2. `/docs/sprint/{name}/qa-script.md` **skeleton** — Gherkin-style verification script for the QA team. PO lays down feature sections and 1 Scenario per AC. Tester expands with edge cases; Architect adds architectural edges; PM finalizes at sprint close.
+1. `/docs/sprint/current/user-stories.md` — the stories + ACs (template below).
+2. `/docs/sprint/current/qa-script.md` **skeleton** — Gherkin-style verification script for the QA team. PO lays down feature sections and 1 Scenario per AC. Tester expands with edge cases; Architect adds architectural edges; PM finalizes during final-review, before the sprint closes.
 
 ### user-stories.md template
 
@@ -59,12 +59,12 @@ Structure:
 
 ### Feature area: {name}
 
-#### Scenario: {sentence describing the outcome}  `[PO: happy]`
+#### Scenario: {sentence describing the outcome}
 1. Given {preconditions — expressed as UI state or role, not DB state}
 1. When {action taken in the UI}
 1. Then {what the user sees in the UI}
 
-#### Scenario: {next one}  `[PO: sad]`
+#### Scenario: {next one}
 1. ...
 
 ## Regression spot-checks
@@ -73,9 +73,11 @@ Structure:
 ## Known gaps / deferred
 - {explicit items deferred to a future sprint}
 
-## DEV ONLY scenarios
-<!-- Reserve this section for scenarios that genuinely cannot be verified in the UI.
-     Each entry must explain WHY it cannot be UI-tested. Keep this section empty if possible. -->
+## Suggested UI additions
+<!-- Reserve this section for outcomes that matter but currently can't be verified in the UI —
+     e.g. "job enqueued", "cache invalidated". Note what UI affordance would make it observable
+     (a status badge, an admin panel row, a log entry surfaced on a page). Do NOT write a
+     Scenario for it — there is nothing to test yet. Keep this section empty if possible. -->
 
 ## Sign-off
 - [ ] All scenarios verified on QA env
@@ -98,13 +100,7 @@ The qa-script is written for QA team members testing the **deployed application 
 - Preconditions (`Given`) describe **UI state or test account setup**, not DB rows
 - Expected results (`Then`) describe **what the user sees** — page content, flash messages, redirects, UI state changes
 
-If an outcome is truly only verifiable server-side (e.g., a background job enqueued, an audit log row written), either: (a) expose it through the UI (preferred — flag this to the Architect), or (b) mark the scenario `DEV ONLY` with an explicit reason why it cannot be UI-tested. DEV ONLY scenarios should be rare exceptions, not the default.
-
-
-**Tags** (one per Scenario, PO decides at authoring time):
-`[PO: happy]` / `[PO: sad]` / `[PO: edge]` / `[PO: authz]` / `[PO: regression]` / `[DEV ONLY]`
-
-Use `[DEV ONLY]` only when a scenario genuinely cannot be verified in the deployed UI and must be placed in the `## DEV ONLY scenarios` section. Every `[DEV ONLY]` scenario must include a comment explaining why UI verification is impossible.
+If an outcome is truly only verifiable server-side (e.g., a background job enqueued, an audit log row written), do **not** write a Scenario for it. Instead, add a note under `## Suggested UI additions` describing what UI affordance (a status badge, an admin panel row, a surfaced log entry) would make it observable — then flag it to the Architect. If it's not worth the UI investment, just skip the scenario entirely. There is no `DEV ONLY` escape hatch: every `Scenario:` in this file must be executable by a QA team member in the deployed UI, full stop.
 
 **No `[QA - ]` annotation stubs in the repo artifact.** QA copies the script to the wiki and annotates there.
 
@@ -115,7 +111,7 @@ Use `[DEV ONLY]` only when a scenario genuinely cannot be verified in the deploy
 - Every story has an explicit **Out of scope** list.
 - Domain terms must match `/docs/glossary.md`. If a new term is needed, flag it for the Architect (they own glossary additions).
 - Stories are atomic units of value — each shippable independently.
-- **All qa-script Scenarios must be executable by a QA team member in the deployed UI.** No database access, no `iex`, no shell commands, no log inspection. Preconditions describe UI state; expected results describe what the user sees. If an outcome can only be verified server-side, flag it to the Architect to expose through the UI — or mark it `[DEV ONLY]` with a written justification. DEV ONLY scenarios are the exception, not the rule.
+- **All qa-script Scenarios must be executable by a QA team member in the deployed UI.** No database access, no `iex`, no shell commands, no log inspection. Preconditions describe UI state; expected results describe what the user sees. If an outcome can only be verified server-side, either note a suggested UI addition under `## Suggested UI additions` and flag it to the Architect, or skip the scenario — never write a scenario requiring dev tooling to verify.
 
 ## Required tool calls
 

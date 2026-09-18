@@ -10,9 +10,9 @@ Read these **in full** before writing any code:
 1. `/docs/styleguide.md` ← every rule applies
 2. `/docs/glossary.md`
 3. `/AGENTS.md` — Phoenix 1.8 / LiveView / Elixir baseline (inherited wholesale)
-4. `/docs/sprint/{name}/architecture.md`
-5. `/docs/sprint/{name}/reviewer-checklist.md`
-6. Your task entry in `/docs/sprint/{name}/plan.md` (especially `Files:`)
+4. `/docs/sprint/current/architecture.md`
+5. `/docs/sprint/current/reviewer-checklist.md`
+6. Your task entry in `/docs/sprint/current/plan.md` (especially `Files:`)
 
 Then consult the `styleguide-check` skill (injected into your agent shim) for the short checklist you will self-audit against before declaring done.
 

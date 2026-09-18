@@ -1,5 +1,5 @@
 // hooks/ownership-guard.ts
-import { sprintPaths, SPRINT_ROOT_REL } from "../lib/paths.js";
+import { sprintPaths, SPRINT_ROOT_REL, CURRENT_LINK_REL } from "../lib/paths.js";
 import { loadState } from "../lib/state.js";
 import { pathOwnedBy, isLivingDocPath } from "../lib/ownership.js";
 
@@ -51,7 +51,17 @@ async function main() {
   if (!state) process.exit(0);
 
   const sprintRootRel = `${SPRINT_ROOT_REL}/${state.name}`;
-  if (path === sprintRootRel || path.startsWith(`${sprintRootRel}/`)) process.exit(0);
+  // Agents write sprint docs through the `docs/sprint/current` pointer, not
+  // the literal name — accept both so the guard doesn't block legitimate
+  // planning/doc writes made through the pointer.
+  if (
+    path === sprintRootRel ||
+    path.startsWith(`${sprintRootRel}/`) ||
+    path === CURRENT_LINK_REL ||
+    path.startsWith(`${CURRENT_LINK_REL}/`)
+  ) {
+    process.exit(0);
+  }
 
   // Final-review's docs-update mode (PM, per ORCHESTRATION.md) targets a fixed
   // set of root-level living docs that no dev-phase task ever declares

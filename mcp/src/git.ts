@@ -163,7 +163,9 @@ export async function commitClosedState(input: { sprintName: string; sprintRootR
   if (add.code !== 0) throw new Error(`git add (closed state) failed: ${add.stderr}`);
   const diff = await run("git", ["diff", "--cached", "--quiet"]);
   if (diff.code === 0) return null;
-  const commit = await run("git", ["commit", "-m", "close: finalize sprint-state.json (phase=closed)"]);
+  // sprint-state.json is gitignored, so this commit can only ever carry the
+  // committable artifacts (qa-script.md, sprint-review.md) — don't name it.
+  const commit = await run("git", ["commit", "-m", "close: finalize sprint artifacts (phase=closed)"]);
   if (commit.code !== 0) throw new Error(`close commit failed: ${commit.stderr}`);
   const sha = await run("git", ["rev-parse", "HEAD"]);
   return sha.stdout.trim();

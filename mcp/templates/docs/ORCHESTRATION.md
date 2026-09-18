@@ -5,6 +5,12 @@ An AI-tweaked version of Scrum. The single goal of this process is **NO CRAP COD
 All sprint artifacts live in `/docs/sprint/{sprint-name}/` unless stated otherwise.
 All logs are `.log` format (timestamped), committed to the repo — they are the audit trail.
 
+**Agents and skill docs never spell out `{sprint-name}` in a path.** They read and write through
+`/docs/sprint/current/`, a pointer (maintained by the sprint-orchestrator MCP server) that always
+resolves to the one sprint currently in flight. This exists so a subagent poking around
+`docs/sprint/` for "context" can only ever reach the active sprint's files, never a past sprint's —
+`docs/sprint/` accumulates one directory per sprint forever, and nothing else stops that.
+
 Deterministic steps are marked with `*`. These are **NEVER** performed by an agent — only by tooling.
 
 ---
@@ -48,11 +54,14 @@ Each skill file in `the plugin's skills/{name}/SKILL.md` is self-contained and a
 /docs/sprint/{sprint-name}/
   sprint-review.md          # ✅ COMMITTED — consolidated record of all six planning docs
                             #    (user-stories, architecture, reviewer-checklist, spec, plan,
-                            #     planning-summary). Written by PM at sprint close.
+                            #     planning-summary). Written by PM during final-review, and
+                            #     committed via commit_docs_update — BEFORE /sprint:approve-close
+                            #     runs, not after.
   qa-script.md              # ✅ COMMITTED — co-authored verification script for the QA team
-                            #   — PO seeds, Tester expands, Architect edges,
-                            #     PM finalizes at close. Gherkin-style. QA
-                            #     annotations happen on the wiki, not here.
+                            #   — PO seeds, Tester expands, Architect edges, PM finalizes
+                            #     during final-review (same commit_docs_update pass, before
+                            #     /sprint:approve-close). Gherkin-style. QA annotations happen
+                            #     on the wiki, not here.
   planning-summary.md       # ⛔ gitignored (captured in sprint-review.md)
   user-stories.md           # ⛔ gitignored (captured in sprint-review.md)
   architecture.md           # ⛔ gitignored (captured in sprint-review.md)
@@ -73,8 +82,8 @@ Each skill file in `the plugin's skills/{name}/SKILL.md` is self-contained and a
 
 - Sprint branch `sprint/{sprint-name}` is created by tooling at the **start of planning**.
 - ALL sprint artifacts and code commits live on the sprint branch.
-- At sprint close (after human approval), a **merge commit** (no squash) brings history back to `main`. Per-task audit trail is preserved.
-- No PR gate for now — local merge after human approval.
+- `/sprint:approve-close` (default) pushes the branch and opens a GitHub PR via `gh`; `/sprint:approve-close --local` merges into `main` directly with a **merge commit** (no squash), preserving the per-task audit trail.
+- Both paths flip phase to `closed` and stop accepting further doc commits — see "Final Review" below for what must be committed *before* this runs.
 
 ---
 
@@ -221,8 +230,8 @@ Interactive. Orchestrator walks the human through the sprint for sign-off, then 
                                                         /docs/project_memory.md (newest sprint on top),
                                                         /CHANGELOG.md (append under "Not yet released"),
                                                         /README.md,
-                                                        /docs/sprint/{name}/sprint-review.md (consolidates the 6 planning docs),
-                                                        /docs/sprint/{name}/qa-script.md (final QA form)
+                                                        /docs/sprint/current/sprint-review.md (consolidates the 6 planning docs),
+                                                        /docs/sprint/current/qa-script.md (final QA form)
   → ✋ Human approves doc updates
   → tooling: commit_docs_update*       — commits architecture.md/project_memory.md/CHANGELOG.md/README.md/
                                           docs/adr/* written above (sprint-scoped docs like sprint-review.md
@@ -235,6 +244,8 @@ Interactive. Orchestrator walks the human through the sprint for sign-off, then 
 ```
 
 Polish tasks are **ordinary tasks** — same gate chain, same subagents, same commit policy. The only special machinery is `polish_task_append`, which lets PM append to `plan.md` while the sprint is in `final-review` phase and flips the phase back to `development` for the duration.
+
+**Ordering is not optional.** `commit_docs_update` must run — and its commit must land — while phase is still `final-review`, strictly before `/sprint:approve-close`. Once `/sprint:approve-close` (or `sprint_merge`) flips phase to `closed`, `commit_docs_update` refuses (it requires `final-review`) and a manual `git commit` on the sprint branch is blocked by the git guard. There is no supported way to commit PM's doc proposal after that point — the tools themselves will refuse to close while it's still uncommitted, but don't rely on that refusal as the process; do docs-update, get human approval, and commit it before calling the close command at all.
 
 ---
 

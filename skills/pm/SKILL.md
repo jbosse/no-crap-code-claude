@@ -1,15 +1,15 @@
 ---
 name: pm
-description: Breaks Architect's design into a flat, ordered task list, writes spec.md and plan.md during planning, appends polish-{n} tasks during final-review, and updates living docs at sprint close. Tasks run single-process, one at a time — no waves, no parallelism. Use after Architect during planning, and at sprint close for doc updates.
+description: Breaks Architect's design into a flat, ordered task list, writes spec.md and plan.md during planning, appends polish-{n} tasks during final-review, and updates living docs during final-review (before the sprint is closed). Tasks run single-process, one at a time — no waves, no parallelism. Use after Architect during planning, and during final-review for doc updates.
 ---
 
 # 📐 PM skill
 
 Load before working:
 
-- `/docs/sprint/{name}/user-stories.md`
-- `/docs/sprint/{name}/architecture.md`
-- `/docs/sprint/{name}/reviewer-checklist.md`
+- `/docs/sprint/current/user-stories.md`
+- `/docs/sprint/current/architecture.md`
+- `/docs/sprint/current/reviewer-checklist.md`
 - `/docs/styleguide.md`
 - `/docs/glossary.md`
 - Tester's stub list
@@ -19,14 +19,19 @@ Load before working:
 ### 1. Planning (after Architect, before dev)
 
 Outputs:
-- `/docs/sprint/{name}/spec.md` — consolidated sprint spec.
-- `/docs/sprint/{name}/plan.md` — tasks, per-task file ownership.
-- `/docs/sprint/{name}/qa-script.md` — **assemble** into final planning form: merge PO's skeleton + Tester's edge cases + Architect's architectural edges into one coherent document. Verify every AC in `user-stories.md` has exactly one corresponding `Scenario:`. Include `qa-script.md` in `planning-summary.md` for human approval.
+- `/docs/sprint/current/spec.md` — consolidated sprint spec.
+- `/docs/sprint/current/plan.md` — tasks, per-task file ownership.
+- `/docs/sprint/current/qa-script.md` — **assemble** into final planning form: merge PO's skeleton + Tester's edge cases + Architect's architectural edges into one coherent document. Verify every AC in `user-stories.md` has exactly one corresponding `Scenario:`. Include `qa-script.md` in `planning-summary.md` for human approval.
 
-### 2. Sprint close (after final review, human-approved)
+### 2. Docs update (during final-review, human-approved — BEFORE the sprint closes)
+
+This mode runs while phase is still `final-review`, never after `/sprint:approve-close` or
+`sprint_merge` has run. Once phase flips to `closed`, `commit_docs_update` refuses and there is
+no supported way to commit these proposals — get them written, approved, and committed through
+`commit_docs_update` first, then hand back to the orchestrator to close.
 
 Proposals (not auto-commits):
-- **Write `/docs/sprint/{name}/sprint-review.md`** — consolidate the six planning working docs into a single committed reference document. Structure:
+- **Write `/docs/sprint/current/sprint-review.md`** — consolidate the six planning working docs into a single committed reference document. Structure:
   ```
   # Sprint Review: {name}
   > Goal: {one-line goal}
@@ -71,7 +76,7 @@ Proposals (not auto-commits):
 
   A sprint may produce entries in more than one section. When in doubt, pick the section that best describes what the user will notice.
 - Update `/README.md` as needed.
-- **Finalize `/docs/sprint/{name}/qa-script.md`**: add Prerequisites (test accounts, seed data prose, feature flags), fill in deploy target, add Regression spot-checks, populate Known gaps / deferred, ensure the Sign-off checkbox block is present. Formatting rules (match the PO skill template): every `Given` / `When` / `Then` / `And` step is a Markdown numbered bullet (`1. ` prefix, auto-numbered on render) — never indented plain-text Gherkin. Do **not** include a handwritten `Signed: ___  Date: ___` line; the checkbox block is the sign-off. QA annotations do NOT go in this file — the QA team copies it to the wiki and annotates there.
+- **Finalize `/docs/sprint/current/qa-script.md`**: add Prerequisites (test accounts, seed data prose, feature flags), fill in deploy target, add Regression spot-checks, populate Known gaps / deferred, ensure the Sign-off checkbox block is present. Formatting rules (match the PO skill template): every `Given` / `When` / `Then` / `And` step is a Markdown numbered bullet (`1. ` prefix, auto-numbered on render) — never indented plain-text Gherkin. Do **not** include a handwritten `Signed: ___  Date: ___` line; the checkbox block is the sign-off. QA annotations do NOT go in this file — the QA team copies it to the wiki and annotates there. Strip any leftover `[PO: ...]` tags from Scenario headings — they're internal authoring noise, not for the QA-facing doc. There is no `DEV ONLY scenarios` section: fold any that slipped in into `## Suggested UI additions` (a note on what UI affordance would make the outcome observable) or drop the scenario entirely.
 
 ## Task ordering
 

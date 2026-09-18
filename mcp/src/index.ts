@@ -5,7 +5,15 @@ import { z } from "zod";
 import { appendFileSync, existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { sprintPaths, ensureSprintDirs, taskLogPath, SPRINT_ROOT_REL, type SprintPaths } from "../../lib/paths.js";
+import {
+  sprintPaths,
+  ensureSprintDirs,
+  taskLogPath,
+  setCurrentSprintLink,
+  clearCurrentSprintLink,
+  SPRINT_ROOT_REL,
+  type SprintPaths,
+} from "../../lib/paths.js";
 import {
   loadState,
   saveState,
@@ -32,6 +40,7 @@ import {
   pushBranch,
   createPullRequest,
   commitDocsUpdate,
+  workingTreeStatus,
 } from "./git.js";
 import { DEFAULT_STEPS, runVerify } from "./verify.js";
 import { runSetup } from "./setup.js";
@@ -50,6 +59,32 @@ function requireActive(): { state: SprintState; paths: SprintPaths } {
 
 function appendSprintLog(paths: SprintPaths, line: string): void {
   appendFileSync(paths.sprintLog, `[${new Date().toISOString()}] ${line}\n`);
+}
+
+/**
+ * Refuse to close while anything outside the sprint's own doc dir is dirty.
+ *
+ * Why: commitClosedState only `git add`s the sprint root, and pushing/PR'ing
+ * only ever ships committed history — a stray edit elsewhere (most often
+ * living-doc updates that were written but never run through
+ * commit_docs_update) silently stays uncommitted in the working tree while
+ * the PR opens without it. Once phase flips to "closed", commit_docs_update
+ * refuses (it requires final-review) and the bash-git-guard hook blocks a
+ * manual `git commit` on a sprint branch — there is then no way back. Catching
+ * it here, before phase changes, means the fix is just: call commit_docs_update
+ * (still legal) and retry.
+ */
+async function assertCleanForClose(sprintRootRel: string): Promise<void> {
+  const dirty = await workingTreeStatus();
+  const stray = dirty.filter(({ path }) => path !== sprintRootRel && !path.startsWith(`${sprintRootRel}/`));
+  if (stray.length === 0) return;
+  const summary = stray.map((d) => `  ${d.status} ${d.path}`).join("\n");
+  throw new Error(
+    `Cannot close: working tree has uncommitted changes outside ${sprintRootRel}:\n${summary}\n\n` +
+      "If these are docs-update output (architecture.md, project_memory.md, CHANGELOG.md, README.md, docs/adr/*), " +
+      "call commit_docs_update now — phase is still final-review, so it will succeed — then retry. " +
+      "Otherwise commit or revert them yourself before retrying.",
+  );
 }
 
 function applyStrike(state: SprintState, paths: SprintPaths, task: TaskState, gate: Gate, reason: string) {
@@ -118,6 +153,7 @@ server.registerTool(
       writeFileSync(paths.sprintLog, `# Sprint: ${name}\nGoal: ${goal}\n`);
     }
     ACTIVE_SPRINT = name;
+    setCurrentSprintLink(CWD, name);
     appendSprintLog(paths, `sprint_start name=${name}`);
     return { content: [{ type: "text", text: `Sprint ${name} ready on branch sprint/${name}. Phase: planning.` }] };
   },
@@ -309,9 +345,11 @@ server.registerTool(
   async () => {
     const { state, paths } = requireActive();
     if (state.phase !== "final-review") throw new Error(`cannot merge: phase is ${state.phase}, expected final-review`);
+    await assertCleanForClose(`${SPRINT_ROOT_REL}/${state.name}`);
     await runConsolidateLogs(paths, state);
     state.phase = "closed";
     saveState(paths, state);
+    clearCurrentSprintLink(CWD);
     await commitClosedState({ sprintName: state.name, sprintRootRel: `${SPRINT_ROOT_REL}/${state.name}` });
     const sha = await mergeSprint(state.branch);
     return { content: [{ type: "text", text: `merged ${state.branch} -> main @ ${sha}` }] };
@@ -360,9 +398,11 @@ server.registerTool(
   async ({ local }) => {
     const { state, paths } = requireActive();
     if (state.phase !== "final-review") throw new Error(`Cannot close: phase is ${state.phase}, expected final-review.`);
+    await assertCleanForClose(`${SPRINT_ROOT_REL}/${state.name}`);
     await runConsolidateLogs(paths, state);
     state.phase = "closed";
     saveState(paths, state);
+    clearCurrentSprintLink(CWD);
     await commitClosedState({ sprintName: state.name, sprintRootRel: `${SPRINT_ROOT_REL}/${state.name}` });
 
     if (local) {
@@ -434,7 +474,10 @@ function sprintNameToTitle(name: string, caseNumber?: string): string {
 currentBranch()
   .then((br) => {
     const m = br.match(/^sprint\/(.+)$/);
-    if (m) ACTIVE_SPRINT = m[1];
+    if (m) {
+      ACTIVE_SPRINT = m[1];
+      setCurrentSprintLink(CWD, m[1]);
+    }
   })
   .catch(() => {})
   .finally(async () => {

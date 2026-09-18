@@ -78,6 +78,11 @@ docs/sprint/*/plan.md
 docs/sprint/*/spec.md
 docs/sprint/*/user-stories.md
 docs/sprint/*/reviewer-checklist.md
+
+# Pointer to the in-flight sprint, maintained by the sprint-orchestrator
+# MCP server so agents can read a fixed path instead of the literal sprint
+# name. Session state, not an artifact — never committed.
+docs/sprint/current
 `;
 
 export interface SetupResult {
