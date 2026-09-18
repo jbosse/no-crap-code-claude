@@ -1,8 +1,11 @@
 {
   "mcpServers": {
     "sprint-orchestrator": {
-      "command": "npx",
-      "args": ["tsx", "${CLAUDE_PLUGIN_ROOT}/mcp/src/index.ts"],
+      "command": "sh",
+      "args": [
+        "-c",
+        "cd \"${CLAUDE_PLUGIN_ROOT}/mcp\" && [ -d node_modules ] || npm install --no-audit --no-fund --silent; exec npx tsx src/index.ts"
+      ],
       "env": {}
     }
   }
