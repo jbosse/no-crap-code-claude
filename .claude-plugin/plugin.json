@@ -1,7 +1,7 @@
 {
   "name": "no-crap-claude",
   "displayName": "No Crap Claude",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI-assisted Scrum-style sprint tooling for Phoenix projects: planning interview, subagent team (PO/Architect/Tester/PM/Builder/Reviewer/Security), per-task gate chain, and guardrails enforced by hooks + an MCP server.",
   "author": { "name": "Jimmy Bosse" },
   "license": "MIT",
