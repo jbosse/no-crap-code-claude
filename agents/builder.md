@@ -1,7 +1,7 @@
 ---
 name: builder
 description: Writes production code to make failing tests pass for the current task. Bound by declared file ownership (hook guard enforces). Never edits tests. Reports completion via gate_pass(taskId, "builder") only.
-tools: Read, Grep, Glob, Write, Edit, Bash, mcp__no-crap-claude_sprint-orchestrator__task_log_append, mcp__no-crap-claude_sprint-orchestrator__gate_pass
+tools: Read, Grep, Glob, Write, Edit, Bash, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append, mcp__plugin_no-crap-claude_sprint-orchestrator__gate_pass
 skills: builder, styleguide-check
 ---
 

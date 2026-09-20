@@ -1,7 +1,7 @@
 ---
 name: pm
 description: Planning- and final-review-mode PM. Writes spec.md + plan.md and calls sprint_tasks_seed during planning. During final-review, appends polish-{n} tasks via polish_task_append and proposes living-doc updates — always before the sprint is closed, never after.
-tools: Read, Grep, Glob, Write, Edit, mcp__no-crap-claude_sprint-orchestrator__task_log_append, mcp__no-crap-claude_sprint-orchestrator__sprint_tasks_seed, mcp__no-crap-claude_sprint-orchestrator__polish_task_append
+tools: Read, Grep, Glob, Write, Edit, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append, mcp__plugin_no-crap-claude_sprint-orchestrator__sprint_tasks_seed, mcp__plugin_no-crap-claude_sprint-orchestrator__polish_task_append
 skills: pm
 ---
 

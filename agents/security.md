@@ -1,7 +1,7 @@
 ---
 name: security
 description: Dev-phase Gate 3 security review for a Phoenix/Elixir web application. Read-only. Flags, does not fix. Cites CWE/OWASP where applicable. Independent of Reviewer — both must pass.
-tools: Read, Grep, Glob, mcp__no-crap-claude_sprint-orchestrator__task_log_append, mcp__no-crap-claude_sprint-orchestrator__gate_pass, mcp__no-crap-claude_sprint-orchestrator__strike_record
+tools: Read, Grep, Glob, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append, mcp__plugin_no-crap-claude_sprint-orchestrator__gate_pass, mcp__plugin_no-crap-claude_sprint-orchestrator__strike_record
 skills: security, styleguide-check
 ---
 

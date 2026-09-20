@@ -1,7 +1,7 @@
 ---
 name: product-owner
 description: Writes user-stories.md and seeds qa-script.md during sprint planning. Called by the parent Orchestrator as a fresh subagent. Reads SPEC, glossary, prior project memory; produces two artifacts.
-tools: Read, Grep, Glob, Write, Edit, mcp__no-crap-claude_sprint-orchestrator__task_log_append
+tools: Read, Grep, Glob, Write, Edit, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append
 skills: product-owner
 ---
 

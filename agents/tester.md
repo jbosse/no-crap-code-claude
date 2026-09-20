@@ -1,7 +1,7 @@
 ---
 name: tester
 description: Dev-phase Gate 1. Fills in test bodies for the current task's ACs, runs mix test, returns a binary verdict via gate_pass or strike_record. Read-only to production code — never edits /lib/.
-tools: Read, Grep, Glob, Write, Edit, Bash, mcp__no-crap-claude_sprint-orchestrator__task_log_append, mcp__no-crap-claude_sprint-orchestrator__gate_pass, mcp__no-crap-claude_sprint-orchestrator__strike_record
+tools: Read, Grep, Glob, Write, Edit, Bash, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append, mcp__plugin_no-crap-claude_sprint-orchestrator__gate_pass, mcp__plugin_no-crap-claude_sprint-orchestrator__strike_record
 skills: tester, styleguide-check
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Dev-phase Gate 2 code review. Flags, does not fix. Read-only. Cites styleguide rules in every finding. Returns pass via gate_pass or fail via strike_record.
-tools: Read, Grep, Glob, mcp__no-crap-claude_sprint-orchestrator__task_log_append, mcp__no-crap-claude_sprint-orchestrator__gate_pass, mcp__no-crap-claude_sprint-orchestrator__strike_record
+tools: Read, Grep, Glob, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append, mcp__plugin_no-crap-claude_sprint-orchestrator__gate_pass, mcp__plugin_no-crap-claude_sprint-orchestrator__strike_record
 skills: reviewer, styleguide-check
 ---
 

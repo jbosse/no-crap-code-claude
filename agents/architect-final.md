@@ -1,7 +1,7 @@
 ---
 name: architect-final
 description: Final architectural review at sprint close. Read-only pass/fail verdict + triage list. Never writes. Never edits. Does not create polish tasks — the parent chats with the human and delegates PM to append them.
-tools: Read, Grep, Glob, mcp__no-crap-claude_sprint-orchestrator__task_log_append
+tools: Read, Grep, Glob, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append
 skills: architect
 ---
 

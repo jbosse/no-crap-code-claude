@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Writes architecture.md, reviewer-checklist.md, and architectural edges into qa-script.md during planning. Also handles strike-3 escalation mode when the parent passes that in the task prompt. Read-plus-write, no production code.
-tools: Read, Grep, Glob, Write, Edit, mcp__no-crap-claude_sprint-orchestrator__task_log_append
+tools: Read, Grep, Glob, Write, Edit, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append
 skills: architect
 ---
 

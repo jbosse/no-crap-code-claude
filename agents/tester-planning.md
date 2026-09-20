@@ -1,7 +1,7 @@
 ---
 name: tester-planning
 description: Writes ExUnit test stubs (1:1 with acceptance criteria) and expands qa-script.md with edge cases during the planning phase. Does not run tests against code — Builder hasn't written any yet.
-tools: Read, Grep, Glob, Write, Edit, Bash, mcp__no-crap-claude_sprint-orchestrator__task_log_append
+tools: Read, Grep, Glob, Write, Edit, Bash, mcp__plugin_no-crap-claude_sprint-orchestrator__task_log_append
 skills: tester, styleguide-check
 ---
 
