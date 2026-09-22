@@ -25,6 +25,7 @@ import {
   appendPolishTask,
   maybeCompletePhase,
   readyToCommit,
+  assertCloseable,
   type SprintState,
   type Gate,
   type TaskState,
@@ -37,6 +38,7 @@ import {
   commitLogsConsolidation,
   commitClosedState,
   mergeSprint,
+  isMergedIntoMain,
   pushBranch,
   createPullRequest,
   commitDocsUpdate,
@@ -344,7 +346,7 @@ server.registerTool(
   { description: "Merge sprint/{name} into main with --no-ff.", inputSchema: {} },
   async () => {
     const { state, paths } = requireActive();
-    if (state.phase !== "final-review") throw new Error(`cannot merge: phase is ${state.phase}, expected final-review`);
+    assertCloseable(state.phase, await isMergedIntoMain(state.branch), "merge");
     await assertCleanForClose(`${SPRINT_ROOT_REL}/${state.name}`);
     await runConsolidateLogs(paths, state);
     state.phase = "closed";
@@ -397,7 +399,7 @@ server.registerTool(
   { description: "Consolidate logs, then push+PR (default) or merge locally (local=true).", inputSchema: { local: z.boolean().optional() } },
   async ({ local }) => {
     const { state, paths } = requireActive();
-    if (state.phase !== "final-review") throw new Error(`Cannot close: phase is ${state.phase}, expected final-review.`);
+    assertCloseable(state.phase, await isMergedIntoMain(state.branch), "close");
     await assertCleanForClose(`${SPRINT_ROOT_REL}/${state.name}`);
     await runConsolidateLogs(paths, state);
     state.phase = "closed";

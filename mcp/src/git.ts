@@ -171,6 +171,11 @@ export async function commitClosedState(input: { sprintName: string; sprintRootR
   return sha.stdout.trim();
 }
 
+export async function isMergedIntoMain(branch: string): Promise<boolean> {
+  const { code } = await run("git", ["merge-base", "--is-ancestor", branch, "main"]);
+  return code === 0;
+}
+
 export async function mergeSprint(sprintBranch: string): Promise<string> {
   const dirty = await run("git", ["status", "--porcelain"]);
   if (dirty.stdout.trim().length > 0) throw new Error("working tree dirty — cannot merge");

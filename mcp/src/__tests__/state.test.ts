@@ -16,6 +16,7 @@ import {
   appendPolishTask,
   maybeCompletePhase,
   readyToCommit,
+  assertCloseable,
   type SprintState,
 } from "../../../lib/state.js";
 
@@ -190,5 +191,25 @@ describe("readyToCommit", () => {
 
     task.gates.security = "fail";
     expect(readyToCommit(task)).toBe(false);
+  });
+});
+
+describe("assertCloseable", () => {
+  it("allows the normal path: phase is final-review", () => {
+    expect(() => assertCloseable("final-review", false, "close")).not.toThrow();
+    expect(() => assertCloseable("final-review", true, "close")).not.toThrow();
+  });
+
+  it("allows retrying a close/merge that flipped phase to closed but never actually merged", () => {
+    expect(() => assertCloseable("closed", false, "close")).not.toThrow();
+  });
+
+  it("refuses to re-close a sprint whose branch is already merged into main", () => {
+    expect(() => assertCloseable("closed", true, "close")).toThrow(/already merged/);
+  });
+
+  it("refuses any other phase", () => {
+    expect(() => assertCloseable("development", false, "close")).toThrow(/phase is development, expected final-review/);
+    expect(() => assertCloseable("planning", false, "merge")).toThrow(/phase is planning, expected final-review/);
   });
 });

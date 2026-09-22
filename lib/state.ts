@@ -167,6 +167,27 @@ export function appendPolishTask(state: SprintState, input: TaskSeedInput): void
   }
 }
 
+/**
+ * Guards sprint_merge / sprint_approve_close.
+ *
+ * Both close and merge, so a merge that fails after the phase already
+ * flipped to "closed" (e.g. a transient dirty-tree error) would otherwise
+ * leave the sprint stuck: phase=closed refuses both tools, and no other
+ * tool can retry just the merge. Treat "closed but not yet merged" as
+ * retryable — every step both tools run before the merge itself
+ * (consolidate logs, commit closed state) is idempotent.
+ */
+export function assertCloseable(phase: Phase, alreadyMergedIntoMain: boolean, action: string): void {
+  if (phase === "final-review") return;
+  if (phase === "closed") {
+    if (alreadyMergedIntoMain) {
+      throw new Error(`cannot ${action}: already merged into main — nothing to do.`);
+    }
+    return;
+  }
+  throw new Error(`cannot ${action}: phase is ${phase}, expected final-review`);
+}
+
 export function maybeCompletePhase(state: SprintState): { phaseFlipped?: boolean; restoredToFinalReview?: boolean } {
   if (state.phase !== "development") return {};
   const pending = state.tasks.some((t) => t.gate !== "done");
